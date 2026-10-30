@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch and Search Book Records</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .book-details { margin-top: 20px; padding: 15px; border: 1px solid #ccc; width: 300px; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <h2>Book Search Portal</h2>
+
+    
+    <label for="bookSelect">Choose a book title:</label>
+    <select id="bookSelect" onchange="displaySelectedBook()">
+        <option value="">--Select a Book--</option>
+    </select>
+
+    
+    <div class="book-details" id="bookDetails" style="display: none;">
+        <h3>Book Details</h3>
+        <p><strong>Title:</strong> <span id="title"></span></p>
+        <p><strong>Author:</strong> <span id="author"></span></p>
+        <p><strong>Publication Year:</strong> <span id="year"></span></p>
+        <p><strong>Genre(s):</strong> <span id="genres"></span></p>
+    </div>
+
+    <script>
+        let booksData = [];
+
+        
+        async function fetchBooks() {
+            const rawUrl = "https://raw.githubusercontent.com/irfanazmi205-creator/Lab06_CI250065_WEBDEV/refs/heads/main/book.json";
+
+            try {
+                const response = await fetch(rawUrl);
+                const jsonData = await response.json();
+                
+                
+                booksData = jsonData.Books; 
+                
+                
+                const selectElement = document.getElementById("bookSelect");
+                booksData.forEach((book, index) => {
+                    const option = document.createElement("option");
+                    option.value = index; 
+                    option.textContent = book.Title; 
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error fetching JSON data:", error);
+            }
+        }
+
+        
+        function displaySelectedBook() {
+            const selectedIndex = document.getElementById("bookSelect").value;
+            const detailsDiv = document.getElementById("bookDetails");
+
+            if (selectedIndex === "") {
+                detailsDiv.style.display = "none";
+                return;
+            }
+
+            
+            const book = booksData[selectedIndex];
+
+            
+            document.getElementById("title").textContent = book.Title;
+            document.getElementById("author").textContent = book.Author;
+            document.getElementById("year").textContent = book["Publication Year"];
+            document.getElementById("genres").textContent = book.Genres.join(", ");
+
+            detailsDiv.style.display = "block";
+        }
+
+        window.onload = fetchBooks;
+    </script>
+
+</body>
+</html>
